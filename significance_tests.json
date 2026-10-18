@@ -1,0 +1,41 @@
+{
+  "bert_vs_roberta": {
+    "mean_diff": -0.00649909953061627,
+    "n_folds": 5,
+    "wilcoxon": {
+      "p_value": 0.3125,
+      "significant_at_0.05": false,
+      "min_possible_p_at_this_n": 0.0625
+    },
+    "paired_t_test": {
+      "p_value": 0.3154616907694352,
+      "significant_at_0.05": false
+    }
+  },
+  "bert_vs_distilbert": {
+    "mean_diff": 0.042337697223510926,
+    "n_folds": 5,
+    "wilcoxon": {
+      "p_value": 0.0625,
+      "significant_at_0.05": false,
+      "min_possible_p_at_this_n": 0.0625
+    },
+    "paired_t_test": {
+      "p_value": 0.0007738727624136048,
+      "significant_at_0.05": true
+    }
+  },
+  "roberta_vs_distilbert": {
+    "mean_diff": 0.0488367967541272,
+    "n_folds": 5,
+    "wilcoxon": {
+      "p_value": 0.0625,
+      "significant_at_0.05": false,
+      "min_possible_p_at_this_n": 0.0625
+    },
+    "paired_t_test": {
+      "p_value": 0.00031955066363800803,
+      "significant_at_0.05": true
+    }
+  }
+}

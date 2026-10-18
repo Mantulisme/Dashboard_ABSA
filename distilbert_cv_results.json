@@ -1,0 +1,547 @@
+{
+  "model_key": "distilbert",
+  "model_name": "distilbert-base-uncased",
+  "n_folds": 5,
+  "f1_macro_mean": 0.5764439337378627,
+  "f1_macro_std": 0.004044927907890564,
+  "f1_weighted_mean": 0.8263872178691084,
+  "f1_weighted_std": 0.0024337501460879683,
+  "n_parameters": 66957317,
+  "n_trainable_parameters": 66957317,
+  "train_time_mean_seconds": 471.73686,
+  "train_time_std_seconds": 0.782476028003422,
+  "train_time_total_seconds": 2358.6843,
+  "eval_samples_per_second_mean": null,
+  "fold_results": [
+    {
+      "fold": 0,
+      "n_train": 15024,
+      "n_test": 3760,
+      "eval_metrics": {
+        "eval_loss": 1.1328758001327515,
+        "eval_accuracy": 0.8215425531914894,
+        "eval_f1_macro": 0.5803022682304066,
+        "eval_f1_weighted": 0.8274596055581076,
+        "eval_precision_macro": 0.5650645555409956,
+        "eval_recall_macro": 0.5997219286656124
+      },
+      "classification_report": {
+        "positive": {
+          "precision": 0.6355140186915887,
+          "recall": 0.7024793388429752,
+          "f1-score": 0.6673209028459274,
+          "support": 484.0
+        },
+        "negative": {
+          "precision": 0.5273522975929978,
+          "recall": 0.654891304347826,
+          "f1-score": 0.5842424242424242,
+          "support": 368.0
+        },
+        "neutral": {
+          "precision": 0.25,
+          "recall": 0.23529411764705882,
+          "f1-score": 0.24242424242424243,
+          "support": 34.0
+        },
+        "conflict": {
+          "precision": 0.47692307692307695,
+          "recall": 0.5210084033613446,
+          "f1-score": 0.4979919678714859,
+          "support": 119.0
+        },
+        "none": {
+          "precision": 0.9355333844973139,
+          "recall": 0.8849364791288566,
+          "f1-score": 0.9095318037679537,
+          "support": 2755.0
+        },
+        "accuracy": 0.8215425531914894,
+        "macro avg": {
+          "precision": 0.5650645555409956,
+          "recall": 0.5997219286656124,
+          "f1-score": 0.5803022682304066,
+          "support": 3760.0
+        },
+        "weighted avg": {
+          "precision": 0.8362507316502389,
+          "recall": 0.8215425531914894,
+          "f1-score": 0.8274596055581076,
+          "support": 3760.0
+        }
+      },
+      "per_aspect_breakdown": {
+        "developer": {
+          "n": 470,
+          "f1_macro": 0.4417168897326954,
+          "f1_weighted": 0.7748896699940575
+        },
+        "gameplay": {
+          "n": 470,
+          "f1_macro": 0.43810961963257594,
+          "f1_weighted": 0.5505105617659524
+        },
+        "graphics": {
+          "n": 470,
+          "f1_macro": 0.36576502299032815,
+          "f1_weighted": 0.8391573024231771
+        },
+        "multiplayer": {
+          "n": 470,
+          "f1_macro": 0.4113918757467145,
+          "f1_weighted": 0.8874305396680139
+        },
+        "performance": {
+          "n": 470,
+          "f1_macro": 0.39485984863837825,
+          "f1_weighted": 0.8178704562007223
+        },
+        "price": {
+          "n": 470,
+          "f1_macro": 0.44806707769659126,
+          "f1_weighted": 0.8258161821546478
+        },
+        "sound": {
+          "n": 470,
+          "f1_macro": 0.5917879113367834,
+          "f1_weighted": 0.9590847802014015
+        },
+        "story": {
+          "n": 470,
+          "f1_macro": 0.6737195156005875,
+          "f1_weighted": 0.8905140141808481
+        }
+      },
+      "n_parameters": 66957317,
+      "n_trainable_parameters": 66957317,
+      "train_runtime_seconds": 472.546,
+      "train_samples_per_second": 127.175,
+      "eval_runtime_seconds": null,
+      "eval_samples_per_second": null
+    },
+    {
+      "fold": 1,
+      "n_train": 15024,
+      "n_test": 3760,
+      "eval_metrics": {
+        "eval_loss": 1.1034458875656128,
+        "eval_accuracy": 0.8191489361702128,
+        "eval_f1_macro": 0.5790098782778985,
+        "eval_f1_weighted": 0.8265115304413325,
+        "eval_precision_macro": 0.5673027944588345,
+        "eval_recall_macro": 0.5987188044287699
+      },
+      "classification_report": {
+        "positive": {
+          "precision": 0.6507633587786259,
+          "recall": 0.6902834008097166,
+          "f1-score": 0.6699410609037328,
+          "support": 494.0
+        },
+        "negative": {
+          "precision": 0.4852607709750567,
+          "recall": 0.6350148367952523,
+          "f1-score": 0.5501285347043702,
+          "support": 337.0
+        },
+        "neutral": {
+          "precision": 0.3870967741935484,
+          "recall": 0.3157894736842105,
+          "f1-score": 0.34782608695652173,
+          "support": 38.0
+        },
+        "conflict": {
+          "precision": 0.3741496598639456,
+          "recall": 0.4661016949152542,
+          "f1-score": 0.41509433962264153,
+          "support": 118.0
+        },
+        "none": {
+          "precision": 0.9392434084829958,
+          "recall": 0.8864046159394158,
+          "f1-score": 0.9120593692022263,
+          "support": 2773.0
+        },
+        "accuracy": 0.8191489361702128,
+        "macro avg": {
+          "precision": 0.5673027944588345,
+          "recall": 0.5987188044287699,
+          "f1-score": 0.5790098782778985,
+          "support": 3760.0
+        },
+        "weighted avg": {
+          "precision": 0.8373381085270964,
+          "recall": 0.8191489361702128,
+          "f1-score": 0.8265115304413325,
+          "support": 3760.0
+        }
+      },
+      "per_aspect_breakdown": {
+        "developer": {
+          "n": 470,
+          "f1_macro": 0.4447628000634565,
+          "f1_weighted": 0.7867257024299031
+        },
+        "gameplay": {
+          "n": 470,
+          "f1_macro": 0.41312096925597636,
+          "f1_weighted": 0.5185216502325907
+        },
+        "graphics": {
+          "n": 470,
+          "f1_macro": 0.37664239738313815,
+          "f1_weighted": 0.8700050065219489
+        },
+        "multiplayer": {
+          "n": 470,
+          "f1_macro": 0.5049749412281381,
+          "f1_weighted": 0.9046813347602377
+        },
+        "performance": {
+          "n": 470,
+          "f1_macro": 0.4260212873136514,
+          "f1_weighted": 0.8099529461739247
+        },
+        "price": {
+          "n": 470,
+          "f1_macro": 0.4027383715586327,
+          "f1_weighted": 0.8308585871618048
+        },
+        "sound": {
+          "n": 470,
+          "f1_macro": 0.5923490896737031,
+          "f1_weighted": 0.9538962188922976
+        },
+        "story": {
+          "n": 470,
+          "f1_macro": 0.5733392304290137,
+          "f1_weighted": 0.8508432219472335
+        }
+      },
+      "n_parameters": 66957317,
+      "n_trainable_parameters": 66957317,
+      "train_runtime_seconds": 471.146,
+      "train_samples_per_second": 127.553,
+      "eval_runtime_seconds": null,
+      "eval_samples_per_second": null
+    },
+    {
+      "fold": 2,
+      "n_train": 15024,
+      "n_test": 3760,
+      "eval_metrics": {
+        "eval_loss": 1.1216880083084106,
+        "eval_accuracy": 0.8196808510638298,
+        "eval_f1_macro": 0.5741041969506038,
+        "eval_f1_weighted": 0.8272120965572731,
+        "eval_precision_macro": 0.5513033737657159,
+        "eval_recall_macro": 0.6043252992473472
+      },
+      "classification_report": {
+        "positive": {
+          "precision": 0.6053571428571428,
+          "recall": 0.710691823899371,
+          "f1-score": 0.6538090646094503,
+          "support": 477.0
+        },
+        "negative": {
+          "precision": 0.5738758029978587,
+          "recall": 0.7034120734908137,
+          "f1-score": 0.6320754716981132,
+          "support": 381.0
+        },
+        "neutral": {
+          "precision": 0.23214285714285715,
+          "recall": 0.3170731707317073,
+          "f1-score": 0.26804123711340205,
+          "support": 41.0
+        },
+        "conflict": {
+          "precision": 0.4,
+          "recall": 0.4098360655737705,
+          "f1-score": 0.4048582995951417,
+          "support": 122.0
+        },
+        "none": {
+          "precision": 0.945141065830721,
+          "recall": 0.8806133625410734,
+          "f1-score": 0.9117369117369117,
+          "support": 2739.0
+        },
+        "accuracy": 0.8196808510638298,
+        "macro avg": {
+          "precision": 0.5513033737657159,
+          "recall": 0.6043252992473472,
+          "f1-score": 0.5741041969506038,
+          "support": 3760.0
+        },
+        "weighted avg": {
+          "precision": 0.8389524666325114,
+          "recall": 0.8196808510638298,
+          "f1-score": 0.8272120965572731,
+          "support": 3760.0
+        }
+      },
+      "per_aspect_breakdown": {
+        "developer": {
+          "n": 470,
+          "f1_macro": 0.46345852895148676,
+          "f1_weighted": 0.8066846468884228
+        },
+        "gameplay": {
+          "n": 470,
+          "f1_macro": 0.42874286638261144,
+          "f1_weighted": 0.509638417501488
+        },
+        "graphics": {
+          "n": 470,
+          "f1_macro": 0.504855071743216,
+          "f1_weighted": 0.8500896343265598
+        },
+        "multiplayer": {
+          "n": 470,
+          "f1_macro": 0.5144710578842315,
+          "f1_weighted": 0.9143508727226398
+        },
+        "performance": {
+          "n": 470,
+          "f1_macro": 0.5391384551766024,
+          "f1_weighted": 0.8081992019790162
+        },
+        "price": {
+          "n": 470,
+          "f1_macro": 0.47439741167784943,
+          "f1_weighted": 0.8421301673234031
+        },
+        "sound": {
+          "n": 470,
+          "f1_macro": 0.4654682772258357,
+          "f1_weighted": 0.9483573279884586
+        },
+        "story": {
+          "n": 470,
+          "f1_macro": 0.492103465593879,
+          "f1_weighted": 0.8493020708095609
+        }
+      },
+      "n_parameters": 66957317,
+      "n_trainable_parameters": 66957317,
+      "train_runtime_seconds": 471.9135,
+      "train_samples_per_second": 127.345,
+      "eval_runtime_seconds": null,
+      "eval_samples_per_second": null
+    },
+    {
+      "fold": 3,
+      "n_train": 15032,
+      "n_test": 3752,
+      "eval_metrics": {
+        "eval_loss": 1.030266523361206,
+        "eval_accuracy": 0.8168976545842217,
+        "eval_f1_macro": 0.5792245394304811,
+        "eval_f1_weighted": 0.828962959749519,
+        "eval_precision_macro": 0.5428584374510711,
+        "eval_recall_macro": 0.6359032486846268
+      },
+      "classification_report": {
+        "positive": {
+          "precision": 0.6204081632653061,
+          "recall": 0.680089485458613,
+          "f1-score": 0.6488794023479189,
+          "support": 447.0
+        },
+        "negative": {
+          "precision": 0.49007936507936506,
+          "recall": 0.7057142857142857,
+          "f1-score": 0.5784543325526932,
+          "support": 350.0
+        },
+        "neutral": {
+          "precision": 0.22641509433962265,
+          "recall": 0.3870967741935484,
+          "f1-score": 0.2857142857142857,
+          "support": 31.0
+        },
+        "conflict": {
+          "precision": 0.42207792207792205,
+          "recall": 0.5371900826446281,
+          "f1-score": 0.4727272727272727,
+          "support": 121.0
+        },
+        "none": {
+          "precision": 0.9553116424931399,
+          "recall": 0.8694256154120585,
+          "f1-score": 0.9103474038102354,
+          "support": 2803.0
+        },
+        "accuracy": 0.8168976545842217,
+        "macro avg": {
+          "precision": 0.5428584374510711,
+          "recall": 0.6359032486846268,
+          "f1-score": 0.5792245394304811,
+          "support": 3752.0
+        },
+        "weighted avg": {
+          "precision": 0.8487950578788905,
+          "recall": 0.8168976545842217,
+          "f1-score": 0.828962959749519,
+          "support": 3752.0
+        }
+      },
+      "per_aspect_breakdown": {
+        "developer": {
+          "n": 469,
+          "f1_macro": 0.35384057573930994,
+          "f1_weighted": 0.7763022269175949
+        },
+        "gameplay": {
+          "n": 469,
+          "f1_macro": 0.41319976466592107,
+          "f1_weighted": 0.5186145396702977
+        },
+        "graphics": {
+          "n": 469,
+          "f1_macro": 0.40287132222616096,
+          "f1_weighted": 0.8586197487772562
+        },
+        "multiplayer": {
+          "n": 469,
+          "f1_macro": 0.36184651711924437,
+          "f1_weighted": 0.8980629992221386
+        },
+        "performance": {
+          "n": 469,
+          "f1_macro": 0.3949508313963883,
+          "f1_weighted": 0.801591465420719
+        },
+        "price": {
+          "n": 469,
+          "f1_macro": 0.49194722968456367,
+          "f1_weighted": 0.8618355415669876
+        },
+        "sound": {
+          "n": 469,
+          "f1_macro": 0.5689651001028246,
+          "f1_weighted": 0.9471724767819146
+        },
+        "story": {
+          "n": 469,
+          "f1_macro": 0.6016055186643422,
+          "f1_weighted": 0.875644185239068
+        }
+      },
+      "n_parameters": 66957317,
+      "n_trainable_parameters": 66957317,
+      "train_runtime_seconds": 472.5264,
+      "train_samples_per_second": 127.248,
+      "eval_runtime_seconds": null,
+      "eval_samples_per_second": null
+    },
+    {
+      "fold": 4,
+      "n_train": 15032,
+      "n_test": 3752,
+      "eval_metrics": {
+        "eval_loss": 1.077391266822815,
+        "eval_accuracy": 0.8107675906183369,
+        "eval_f1_macro": 0.5695787857999235,
+        "eval_f1_weighted": 0.8217898970393102,
+        "eval_precision_macro": 0.546353097794258,
+        "eval_recall_macro": 0.6138927407898558
+      },
+      "classification_report": {
+        "positive": {
+          "precision": 0.628,
+          "recall": 0.6977777777777778,
+          "f1-score": 0.6610526315789473,
+          "support": 450.0
+        },
+        "negative": {
+          "precision": 0.5009140767824497,
+          "recall": 0.6884422110552764,
+          "f1-score": 0.5798941798941799,
+          "support": 398.0
+        },
+        "neutral": {
+          "precision": 0.27586206896551724,
+          "recall": 0.20512820512820512,
+          "f1-score": 0.23529411764705882,
+          "support": 39.0
+        },
+        "conflict": {
+          "precision": 0.3764705882352941,
+          "recall": 0.6153846153846154,
+          "f1-score": 0.46715328467153283,
+          "support": 104.0
+        },
+        "none": {
+          "precision": 0.9505187549880287,
+          "recall": 0.8627308946034046,
+          "f1-score": 0.9044997152078982,
+          "support": 2761.0
+        },
+        "accuracy": 0.8107675906183369,
+        "macro avg": {
+          "precision": 0.546353097794258,
+          "recall": 0.6138927407898558,
+          "f1-score": 0.5695787857999235,
+          "support": 3752.0
+        },
+        "weighted avg": {
+          "precision": 0.8412200551565799,
+          "recall": 0.8107675906183369,
+          "f1-score": 0.8217898970393102,
+          "support": 3752.0
+        }
+      },
+      "per_aspect_breakdown": {
+        "developer": {
+          "n": 469,
+          "f1_macro": 0.4566447419282019,
+          "f1_weighted": 0.7683500475334576
+        },
+        "gameplay": {
+          "n": 469,
+          "f1_macro": 0.4033130524720887,
+          "f1_weighted": 0.5160457798968331
+        },
+        "graphics": {
+          "n": 469,
+          "f1_macro": 0.4169684012585658,
+          "f1_weighted": 0.8474123245186364
+        },
+        "multiplayer": {
+          "n": 469,
+          "f1_macro": 0.3978824388462943,
+          "f1_weighted": 0.9006043168603859
+        },
+        "performance": {
+          "n": 469,
+          "f1_macro": 0.4301759056681692,
+          "f1_weighted": 0.80901366813596
+        },
+        "price": {
+          "n": 469,
+          "f1_macro": 0.3952377513705871,
+          "f1_weighted": 0.8298645488024917
+        },
+        "sound": {
+          "n": 469,
+          "f1_macro": 0.43262757781371397,
+          "f1_weighted": 0.9466404251638179
+        },
+        "story": {
+          "n": 469,
+          "f1_macro": 0.598368311232227,
+          "f1_weighted": 0.870267874176139
+        }
+      },
+      "n_parameters": 66957317,
+      "n_trainable_parameters": 66957317,
+      "train_runtime_seconds": 470.5524,
+      "train_samples_per_second": 127.782,
+      "eval_runtime_seconds": null,
+      "eval_samples_per_second": null
+    }
+  ]
+}

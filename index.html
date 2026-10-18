@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABSA Model Comparison — Evaluation Dashboard</title>
+<style>
+  :root {
+    --bg: #f6f6f4;
+    --panel: #ffffff;
+    --ink: #1b1d1f;
+    --ink-soft: #55585c;
+    --line: #e2e2df;
+    --bert: #2e5eaa;
+    --roberta: #7c3aed;
+    --distilbert: #c2760c;
+    --good: #1a7f4e;
+    --bad: #b3261e;
+    --mono: 'IBM Plex Mono', 'SF Mono', 'Consolas', monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.5;
+  }
+  header {
+    padding: 36px 32px 28px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel);
+  }
+  header h1 {
+    margin: 0 0 6px;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  header p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+  section { padding: 32px 0; border-bottom: 1px solid var(--line); }
+  section:last-child { border-bottom: none; }
+  h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    margin: 0 0 18px;
+    font-weight: 600;
+  }
+  .takeaway {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--ink);
+    padding: 18px 22px;
+    border-radius: 6px;
+    font-size: 15px;
+  }
+  .takeaway b { font-variant-numeric: tabular-nums; }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 20px;
+    position: relative;
+  }
+  .card .swatch {
+    width: 10px; height: 10px; border-radius: 50%;
+    display: inline-block; margin-right: 8px;
+  }
+  .card h3 { margin: 0 0 14px; font-size: 15px; display: flex; align-items: center; }
+  .card .badge {
+    position: absolute; top: 18px; right: 18px;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em;
+    padding: 3px 8px; border-radius: 20px; font-weight: 600;
+  }
+  .badge.best { background: #e7f4ec; color: var(--good); }
+  .badge.fastest { background: #fdf1de; color: var(--distilbert); }
+  .metric-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 7px 0; border-top: 1px dashed var(--line);
+    font-size: 13px;
+  }
+  .metric-row:first-of-type { border-top: none; }
+  .metric-row .label { color: var(--ink-soft); }
+  .metric-row .value { font-family: var(--mono); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .chart-panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 20px 24px 12px;
+  }
+  .legend { display: flex; gap: 18px; margin-bottom: 8px; font-size: 12px; color: var(--ink-soft); flex-wrap: wrap; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  th { color: var(--ink-soft); font-weight: 600; text-transform: uppercase; font-size: 10.5px; letter-spacing: 0.04em; }
+  td.num, th.num { font-family: var(--mono); text-align: right; font-variant-numeric: tabular-nums; }
+  .sig-yes { color: var(--good); font-weight: 700; }
+  .sig-no { color: var(--ink-soft); }
+  .note {
+    font-size: 12.5px; color: var(--ink-soft); background: #fbf8ee; border: 1px solid #ecdfb8;
+    padding: 10px 14px; border-radius: 6px; margin-top: 14px;
+  }
+  .axis-label { font-size: 11px; fill: var(--ink-soft); font-family: var(--sans); }
+  .bar-label { font-size: 10.5px; fill: var(--ink-soft); font-family: var(--mono); }
+  footer { padding: 24px 32px 40px; color: var(--ink-soft); font-size: 12px; text-align: center; }
+  @media (max-width: 860px) {
+    .cards { grid-template-columns: 1fr; }
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>ABSA Model Comparison — Evaluation Dashboard</h1>
+    <p>BERT vs RoBERTa vs DistilBERT · 5-fold grouped/stratified cross-validation · aspect-category sentiment analysis on Steam game reviews</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section id="takeaway-section">
+    <h2>Summary</h2>
+    <div class="takeaway" id="takeaway"></div>
+  </section>
+
+  <section>
+    <h2>Model Overview</h2>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <section>
+    <h2>F1-macro &amp; F1-weighted (mean ± std across folds)</h2>
+    <div class="chart-panel">
+      <div class="legend" id="legend-main"></div>
+      <svg id="chart-main" viewBox="0 0 900 380" style="width:100%;height:auto;"></svg>
+    </div>
+  </section>
+
+  <section>
+    <div class="grid-2">
+      <div class="chart-panel">
+        <h2 style="margin-top:0">Efficiency: F1-macro vs Training Time</h2>
+        <svg id="chart-efficiency" viewBox="0 0 520 380" style="width:100%;height:auto;"></svg>
+      </div>
+      <div class="chart-panel">
+        <h2 style="margin-top:0">Fold-by-fold Stability (F1-macro)</h2>
+        <svg id="chart-folds" viewBox="0 0 520 380" style="width:100%;height:auto;"></svg>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Per-class F1 (mean across folds)</h2>
+    <div class="chart-panel">
+      <div class="legend" id="legend-class"></div>
+      <svg id="chart-class" viewBox="0 0 900 380" style="width:100%;height:auto;"></svg>
+    </div>
+  </section>
+
+  <section>
+    <h2>Per-aspect F1-macro (mean across folds)</h2>
+    <div class="chart-panel">
+      <div class="legend" id="legend-aspect"></div>
+      <svg id="chart-aspect" viewBox="0 0 900 460" style="width:100%;height:auto;"></svg>
+    </div>
+  </section>
+
+  <section>
+    <h2>Statistical Significance (paired, fold-level F1-macro)</h2>
+    <div class="chart-panel">
+      <table id="sig-table"></table>
+      <div class="note">
+        With N_FOLDS=5, Wilcoxon signed-rank has a hard floor at p = 2/2⁵ = 0.0625 — it cannot reach significance at p&lt;0.05 regardless of true effect size. The paired t-test doesn't share this floor and is the more informative test here, though it assumes roughly normal fold-level differences. Report both; don't lean on Wilcoxon's non-significance alone as evidence models are equivalent.
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Raw metrics</h2>
+    <div class="chart-panel">
+      <table id="raw-table"></table>
+    </div>
+  </section>
+
+</div>
+
+<footer>Generated from bert_cv_results.json · roberta_cv_results.json · distilbert_cv_results.json · significance_tests.json</footer>
+
+<script id="data-consolidated" type="application/json">{"bert": {"model_name": "bert-base-uncased", "n_folds": 5, "f1_macro_mean": 0.6187816309613736, "f1_macro_std": 0.011602202783330259, "f1_weighted_mean": 0.8551973839748133, "f1_weighted_std": 0.00956480958374569, "n_parameters": 109486085, "train_time_mean_seconds": 888.26816, "train_time_total_seconds": 4441.3408, "fold_f1_macro": [0.633976285863591, 0.6270177158568695, 0.6003810907031772, 0.6196660590725941, 0.6128670033106364], "fold_f1_weighted": [0.8720847341284792, 0.8555236468345115, 0.842468735483244, 0.8527775272546239, 0.8531322761732076], "fold_train_time": [886.6527, 889.5928, 890.8272, 887.9515, 886.3166], "per_class": {"positive": {"f1_mean": 0.7330728291600803, "f1_per_fold": [0.7744510978043913, 0.7210473313192346, 0.7073643410852714, 0.7253218884120172, 0.7371794871794872], "support_total": 2352.0}, "negative": {"f1_mean": 0.6385519289424658, "f1_per_fold": [0.6851119894598156, 0.6290550070521862, 0.6265664160401002, 0.6163849154746424, 0.6356413166855845], "support_total": 1834.0}, "neutral": {"f1_mean": 0.3159079301178983, "f1_per_fold": [0.27692307692307694, 0.37681159420289856, 0.3170731707317073, 0.3384615384615385, 0.2702702702702703], "support_total": 183.0}, "conflict": {"f1_mean": 0.4786566613921151, "f1_per_fold": [0.49557522123893805, 0.4785714285714286, 0.42857142857142855, 0.4943820224719101, 0.4961832061068702], "support_total": 584.0}, "none": {"f1_mean": 0.9277188051943088, "f1_per_fold": [0.9378200438917337, 0.9296032181385994, 0.9223300970873787, 0.9237799305428623, 0.92506073631097], "support_total": 13831.0}}, "per_aspect": {"developer": {"f1_macro_mean": 0.4975703121704858, "f1_weighted_mean": 0.829756744452537, "n_total": 2348}, "gameplay": {"f1_macro_mean": 0.476664170594243, "f1_weighted_mean": 0.6012492496376642, "n_total": 2348}, "graphics": {"f1_macro_mean": 0.49219722699879603, "f1_weighted_mean": 0.89213719899939, "n_total": 2348}, "multiplayer": {"f1_macro_mean": 0.5245409465706284, "f1_weighted_mean": 0.9165230085347595, "n_total": 2348}, "performance": {"f1_macro_mean": 0.5072996398225478, "f1_weighted_mean": 0.8625803307417277, "n_total": 2348}, "price": {"f1_macro_mean": 0.4938873834866703, "f1_weighted_mean": 0.8529943769557249, "n_total": 2348}, "sound": {"f1_macro_mean": 0.5981589042723839, "f1_weighted_mean": 0.9569344525980273, "n_total": 2348}, "story": {"f1_macro_mean": 0.621322102983286, "f1_weighted_mean": 0.8839982591723373, "n_total": 2348}}}, "roberta": {"model_name": "roberta-base", "n_folds": 5, "f1_macro_mean": 0.62528073049199, "f1_macro_std": 0.007791652748250588, "f1_weighted_mean": 0.8613153394363764, "f1_weighted_std": 0.006767415486087402, "n_parameters": 124649477, "train_time_mean_seconds": 891.6713, "train_time_total_seconds": 4458.3565, "fold_f1_macro": [0.6314263507951241, 0.6157252070348658, 0.6160062446790967, 0.6336241291718478, 0.6296217207790151], "fold_f1_weighted": [0.8631326372026014, 0.8554437047000062, 0.8515401581733169, 0.868350390180414, 0.8681098069255434], "fold_train_time": [886.5587, 897.4489, 892.7911, 891.5558, 890.002], "per_class": {"positive": {"f1_mean": 0.7490641235358637, "f1_per_fold": [0.7627281460134486, 0.739172281039461, 0.7270992366412213, 0.7405128205128205, 0.7758081334723671], "support_total": 2352.0}, "negative": {"f1_mean": 0.6703908488205688, "f1_per_fold": [0.6708860759493671, 0.6406460296096904, 0.6783042394014963, 0.6994818652849741, 0.6626360338573156], "support_total": 1834.0}, "neutral": {"f1_mean": 0.27999353394428145, "f1_per_fold": [0.2647058823529412, 0.3188405797101449, 0.30927835051546393, 0.25, 0.2571428571428571], "support_total": 183.0}, "conflict": {"f1_mean": 0.4982127312216411, "f1_per_fold": [0.5306122448979592, 0.45323741007194246, 0.44166666666666665, 0.5476190476190477, 0.5179282868525896], "support_total": 584.0}, "none": {"f1_mean": 0.9287424149375946, "f1_per_fold": [0.9281994047619048, 0.9267297347430903, 0.9236827301706356, 0.9305069124423964, 0.9345932925699463], "support_total": 13831.0}}, "per_aspect": {"developer": {"f1_macro_mean": 0.5096651863726411, "f1_weighted_mean": 0.8390045037473157, "n_total": 2348}, "gameplay": {"f1_macro_mean": 0.4984862015725507, "f1_weighted_mean": 0.6158072006981483, "n_total": 2348}, "graphics": {"f1_macro_mean": 0.5028297415675117, "f1_weighted_mean": 0.8963823611562931, "n_total": 2348}, "multiplayer": {"f1_macro_mean": 0.4851744846263385, "f1_weighted_mean": 0.9123901059636527, "n_total": 2348}, "performance": {"f1_macro_mean": 0.5759576023271507, "f1_weighted_mean": 0.8869778156065694, "n_total": 2348}, "price": {"f1_macro_mean": 0.5098944844820001, "f1_weighted_mean": 0.8547915994577501, "n_total": 2348}, "sound": {"f1_macro_mean": 0.6254044746803544, "f1_weighted_mean": 0.9618100499478748, "n_total": 2348}, "story": {"f1_macro_mean": 0.6295350543874987, "f1_weighted_mean": 0.8823417915225104, "n_total": 2348}}}, "distilbert": {"model_name": "distilbert-base-uncased", "n_folds": 5, "f1_macro_mean": 0.5764439337378627, "f1_macro_std": 0.004044927907890564, "f1_weighted_mean": 0.8263872178691084, "f1_weighted_std": 0.0024337501460879683, "n_parameters": 66957317, "train_time_mean_seconds": 471.73686, "train_time_total_seconds": 2358.6843, "fold_f1_macro": [0.5803022682304066, 0.5790098782778985, 0.5741041969506038, 0.5792245394304811, 0.5695787857999235], "fold_f1_weighted": [0.8274596055581076, 0.8265115304413325, 0.8272120965572731, 0.828962959749519, 0.8217898970393102], "fold_train_time": [472.546, 471.146, 471.9135, 472.5264, 470.5524], "per_class": {"positive": {"f1_mean": 0.6602006124571954, "f1_per_fold": [0.6673209028459274, 0.6699410609037328, 0.6538090646094503, 0.6488794023479189, 0.6610526315789473], "support_total": 2352.0}, "negative": {"f1_mean": 0.5849589886183562, "f1_per_fold": [0.5842424242424242, 0.5501285347043702, 0.6320754716981132, 0.5784543325526932, 0.5798941798941799], "support_total": 1834.0}, "neutral": {"f1_mean": 0.2758599939711021, "f1_per_fold": [0.24242424242424243, 0.34782608695652173, 0.26804123711340205, 0.2857142857142857, 0.23529411764705882], "support_total": 183.0}, "conflict": {"f1_mean": 0.45156503289761496, "f1_per_fold": [0.4979919678714859, 0.41509433962264153, 0.4048582995951417, 0.4727272727272727, 0.46715328467153283], "support_total": 584.0}, "none": {"f1_mean": 0.9096350407450451, "f1_per_fold": [0.9095318037679537, 0.9120593692022263, 0.9117369117369117, 0.9103474038102354, 0.9044997152078982], "support_total": 13831.0}}, "per_aspect": {"developer": {"f1_macro_mean": 0.43208470728303006, "f1_weighted_mean": 0.7825904587526872, "n_total": 2348}, "gameplay": {"f1_macro_mean": 0.4192972544818347, "f1_weighted_mean": 0.5226661898134324, "n_total": 2348}, "graphics": {"f1_macro_mean": 0.4134204431202818, "f1_weighted_mean": 0.8530568033135157, "n_total": 2348}, "multiplayer": {"f1_macro_mean": 0.4381133661649246, "f1_weighted_mean": 0.9010260126466832, "n_total": 2348}, "performance": {"f1_macro_mean": 0.4370292656386379, "f1_weighted_mean": 0.8093255475820683, "n_total": 2348}, "price": {"f1_macro_mean": 0.44247756839764485, "f1_weighted_mean": 0.838101005401867, "n_total": 2348}, "sound": {"f1_macro_mean": 0.5302395912305722, "f1_weighted_mean": 0.9510302458055782, "n_total": 2348}, "story": {"f1_macro_mean": 0.5878272083040099, "f1_weighted_mean": 0.8673142732705699, "n_total": 2348}}}}
+</script>
+<script id="data-sig" type="application/json">{"bert_vs_roberta": {"mean_diff": -0.00649909953061627, "n_folds": 5, "wilcoxon": {"p_value": 0.3125, "significant_at_0.05": false, "min_possible_p_at_this_n": 0.0625}, "paired_t_test": {"p_value": 0.3154616907694352, "significant_at_0.05": false}}, "bert_vs_distilbert": {"mean_diff": 0.042337697223510926, "n_folds": 5, "wilcoxon": {"p_value": 0.0625, "significant_at_0.05": false, "min_possible_p_at_this_n": 0.0625}, "paired_t_test": {"p_value": 0.0007738727624136048, "significant_at_0.05": true}}, "roberta_vs_distilbert": {"mean_diff": 0.0488367967541272, "n_folds": 5, "wilcoxon": {"p_value": 0.0625, "significant_at_0.05": false, "min_possible_p_at_this_n": 0.0625}, "paired_t_test": {"p_value": 0.00031955066363800803, "significant_at_0.05": true}}}
+</script>
+
+<script>
+const DATA = JSON.parse(document.getElementById('data-consolidated').textContent);
+const SIG = JSON.parse(document.getElementById('data-sig').textContent);
+const MODELS = ['bert', 'roberta', 'distilbert'];
+const COLORS = { bert: '#2e5eaa', roberta: '#7c3aed', distilbert: '#c2760c' };
+const NAMES = { bert: 'BERT', roberta: 'RoBERTa', distilbert: 'DistilBERT' };
+const CLASSES = ['positive','negative','neutral','conflict','none'];
+const ASPECTS = Object.keys(DATA.bert.per_aspect);
+
+function fmt(x, d=4) { return x.toFixed(d); }
+function fmtPct(x) { return (x*100).toFixed(1) + '%'; }
+function fmtMin(s) { return (s/60).toFixed(1); }
+function fmtM(n) { return (n/1e6).toFixed(0) + 'M'; }
+
+// ---------- Takeaway ----------
+(function() {
+  const best = MODELS.reduce((a,b) => DATA[a].f1_macro_mean > DATA[b].f1_macro_mean ? a : b);
+  const fastest = MODELS.reduce((a,b) => DATA[a].train_time_total_seconds < DATA[b].train_time_total_seconds ? a : b);
+  const bd_sig = SIG['bert_vs_distilbert'];
+  const rd_sig = SIG['roberta_vs_distilbert'];
+  const br_sig = SIG['bert_vs_roberta'];
+  const speedup = (DATA.bert.train_time_total_seconds / DATA.distilbert.train_time_total_seconds).toFixed(1);
+  document.getElementById('takeaway').innerHTML =
+    `<b>${NAMES[best]}</b> has the highest mean F1-macro (<b>${fmt(DATA[best].f1_macro_mean)}</b>), ` +
+    `narrowly ahead of BERT (paired t-test p=${fmt(br_sig.paired_t_test.p_value,3)}, not significant). ` +
+    `<b>DistilBERT</b> trains <b>${speedup}x faster</b> (${fmtMin(DATA.distilbert.train_time_total_seconds)} vs ` +
+    `${fmtMin(DATA.bert.train_time_total_seconds)} min total across 5 folds) but scores significantly lower on F1-macro ` +
+    `than both BERT (p=${fmt(bd_sig.paired_t_test.p_value,4)}) and RoBERTa (p=${fmt(rd_sig.paired_t_test.p_value,4)}).`;
+})();
+
+// ---------- Cards ----------
+(function() {
+  const bestF1 = MODELS.reduce((a,b) => DATA[a].f1_macro_mean > DATA[b].f1_macro_mean ? a : b);
+  const fastest = MODELS.reduce((a,b) => DATA[a].train_time_total_seconds < DATA[b].train_time_total_seconds ? a : b);
+  const container = document.getElementById('cards');
+  MODELS.forEach(m => {
+    const d = DATA[m];
+    const badges = [];
+    if (m === bestF1) badges.push('<span class="badge best">Best F1</span>');
+    if (m === fastest) badges.push('<span class="badge fastest">Fastest</span>');
+    container.innerHTML += `
+      <div class="card">
+        ${badges.join('')}
+        <h3><span class="swatch" style="background:${COLORS[m]}"></span>${NAMES[m]} <span style="color:var(--ink-soft);font-weight:400;margin-left:6px;font-size:12px">${d.model_name}</span></h3>
+        <div class="metric-row"><span class="label">F1-macro</span><span class="value">${fmt(d.f1_macro_mean)} ± ${fmt(d.f1_macro_std)}</span></div>
+        <div class="metric-row"><span class="label">F1-weighted</span><span class="value">${fmt(d.f1_weighted_mean)} ± ${fmt(d.f1_weighted_std)}</span></div>
+        <div class="metric-row"><span class="label">Parameters</span><span class="value">${fmtM(d.n_parameters)}</span></div>
+        <div class="metric-row"><span class="label">Train time (total, 5 folds)</span><span class="value">${fmtMin(d.train_time_total_seconds)} min</span></div>
+        <div class="metric-row"><span class="label">Train time (per fold)</span><span class="value">${fmtMin(d.train_time_mean_seconds)} min</span></div>
+      </div>`;
+  });
+})();
+
+// ---------- SVG helpers ----------
+const SVGNS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs) {
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+function text(x, y, str, opts={}) {
+  const t = el('text', {x, y, class: opts.cls || 'axis-label', 'text-anchor': opts.anchor || 'middle'});
+  t.textContent = str;
+  if (opts.baseline) t.setAttribute('dominant-baseline', opts.baseline);
+  return t;
+}
+
+// ---------- Grouped bar chart (generic) ----------
+function groupedBarChart(svgId, categories, series, opts={}) {
+  const svg = document.getElementById(svgId);
+  const vb = svg.viewBox.baseVal;
+  const W = vb.width, H = vb.height;
+  const marginL = opts.marginL || 46, marginR = 20, marginT = 20, marginB = opts.marginB || 60;
+  const plotW = W - marginL - marginR, plotH = H - marginT - marginB;
+  const maxVal = opts.maxVal || 1.0;
+  const groupW = plotW / categories.length;
+  const barW = (groupW * 0.7) / series.length;
+
+  // axes
+  svg.appendChild(el('line', {x1:marginL, y1:marginT, x2:marginL, y2:marginT+plotH, stroke:'#ccc'}));
+  svg.appendChild(el('line', {x1:marginL, y1:marginT+plotH, x2:marginL+plotW, y2:marginT+plotH, stroke:'#ccc'}));
+  for (let g=0; g<=5; g++) {
+    const val = (maxVal/5)*g;
+    const y = marginT + plotH - (val/maxVal)*plotH;
+    svg.appendChild(el('line', {x1:marginL, y1:y, x2:marginL+plotW, y2:y, stroke:'#eee'}));
+    svg.appendChild(text(marginL-8, y, val.toFixed(2), {anchor:'end', baseline:'central'}));
+  }
+
+  categories.forEach((cat, ci) => {
+    const groupX = marginL + ci*groupW + groupW*0.15;
+    series.forEach((s, si) => {
+      const val = s.values[ci];
+      const barH = (val/maxVal) * plotH;
+      const x = groupX + si*barW;
+      const y = marginT + plotH - barH;
+      svg.appendChild(el('rect', {x, y, width: barW*0.88, height: barH, fill: s.color, rx: 2}));
+      if (s.err && s.err[ci]) {
+        const errH = (s.err[ci]/maxVal) * plotH;
+        const cx = x + barW*0.44;
+        svg.appendChild(el('line', {x1:cx, y1:y-errH, x2:cx, y2:y+errH, stroke:'#333', 'stroke-width':1.2}));
+        svg.appendChild(el('line', {x1:cx-4, y1:y-errH, x2:cx+4, y2:y-errH, stroke:'#333', 'stroke-width':1.2}));
+        svg.appendChild(el('line', {x1:cx-4, y1:y+errH, x2:cx+4, y2:y+errH, stroke:'#333', 'stroke-width':1.2}));
+      }
+      if (opts.showValues) {
+        svg.appendChild(text(x+barW*0.44, y-8, val.toFixed(3), {cls:'bar-label'}));
+      }
+    });
+    const labelX = marginL + ci*groupW + groupW/2;
+    const label = opts.categoryLabels ? opts.categoryLabels(cat) : cat;
+    if (opts.rotateLabels) {
+      const t = text(0, 0, label, {cls:'axis-label', anchor:'end'});
+      t.setAttribute('transform', `translate(${labelX},${marginT+plotH+14}) rotate(-35)`);
+      svg.appendChild(t);
+    } else {
+      svg.appendChild(text(labelX, marginT+plotH+20, label, {cls:'axis-label'}));
+    }
+  });
+}
+
+function legendFor(elId, series) {
+  const c = document.getElementById(elId);
+  c.innerHTML = series.map(s => `<span><i style="background:${s.color}"></i>${s.label}</span>`).join('');
+}
+
+// ---------- Main F1 chart ----------
+groupedBarChart('chart-main', ['F1-macro', 'F1-weighted'], MODELS.map(m => ({
+  label: NAMES[m], color: COLORS[m],
+  values: [DATA[m].f1_macro_mean, DATA[m].f1_weighted_mean],
+  err: [DATA[m].f1_macro_std, DATA[m].f1_weighted_std],
+})), { maxVal: 1.0, showValues: true, marginB: 40 });
+legendFor('legend-main', MODELS.map(m => ({label: NAMES[m], color: COLORS[m]})));
+
+// ---------- Per-class chart ----------
+groupedBarChart('chart-class', CLASSES, MODELS.map(m => ({
+  label: NAMES[m], color: COLORS[m],
+  values: CLASSES.map(c => DATA[m].per_class[c].f1_mean),
+})), { maxVal: 1.0, showValues: true, marginB: 40,
+  categoryLabels: c => c.charAt(0).toUpperCase()+c.slice(1) });
+legendFor('legend-class', MODELS.map(m => ({label: NAMES[m], color: COLORS[m]})));
+
+// ---------- Per-aspect chart ----------
+groupedBarChart('chart-aspect', ASPECTS, MODELS.map(m => ({
+  label: NAMES[m], color: COLORS[m],
+  values: ASPECTS.map(a => DATA[m].per_aspect[a].f1_macro_mean),
+})), { maxVal: 1.0, showValues: false, marginB: 90, rotateLabels: true });
+legendFor('legend-aspect', MODELS.map(m => ({label: NAMES[m], color: COLORS[m]})));
+
+// ---------- Efficiency scatter ----------
+(function() {
+  const svg = document.getElementById('chart-efficiency');
+  const vb = svg.viewBox.baseVal;
+  const W = vb.width, H = vb.height;
+  const marginL = 50, marginR = 30, marginT = 20, marginB = 50;
+  const plotW = W-marginL-marginR, plotH = H-marginT-marginB;
+
+  const xs = MODELS.map(m => DATA[m].train_time_total_seconds/60);
+  const ys = MODELS.map(m => DATA[m].f1_macro_mean);
+  const xMin = Math.min(...xs)*0.85, xMax = Math.max(...xs)*1.1;
+  const yMin = Math.min(...ys)-0.02, yMax = Math.max(...ys)+0.02;
+
+  svg.appendChild(el('line', {x1:marginL, y1:marginT, x2:marginL, y2:marginT+plotH, stroke:'#ccc'}));
+  svg.appendChild(el('line', {x1:marginL, y1:marginT+plotH, x2:marginL+plotW, y2:marginT+plotH, stroke:'#ccc'}));
+  svg.appendChild(text(marginL+plotW/2, H-8, 'Total training time, 5 folds (min)', {cls:'axis-label'}));
+  const yl = text(0,0,'F1-macro (mean)', {cls:'axis-label'});
+  yl.setAttribute('transform', `translate(14, ${marginT+plotH/2}) rotate(-90)`);
+  svg.appendChild(yl);
+
+  for (let g=0; g<=4; g++) {
+    const val = yMin + (yMax-yMin)*g/4;
+    const y = marginT + plotH - ((val-yMin)/(yMax-yMin))*plotH;
+    svg.appendChild(el('line', {x1:marginL, y1:y, x2:marginL+plotW, y2:y, stroke:'#eee'}));
+    svg.appendChild(text(marginL-8, y, val.toFixed(3), {anchor:'end', baseline:'central'}));
+  }
+  for (let g=0; g<=4; g++) {
+    const val = xMin + (xMax-xMin)*g/4;
+    const x = marginL + ((val-xMin)/(xMax-xMin))*plotW;
+    svg.appendChild(text(x, marginT+plotH+18, val.toFixed(0), {cls:'axis-label'}));
+  }
+
+  const maxParams = Math.max(...MODELS.map(m => DATA[m].n_parameters));
+  MODELS.forEach(m => {
+    const x = marginL + ((DATA[m].train_time_total_seconds/60 - xMin)/(xMax-xMin))*plotW;
+    const y = marginT + plotH - ((DATA[m].f1_macro_mean - yMin)/(yMax-yMin))*plotH;
+    const r = 10 + 18*(DATA[m].n_parameters/maxParams);
+    svg.appendChild(el('circle', {cx:x, cy:y, r, fill:COLORS[m], 'fill-opacity':0.75, stroke:'#222', 'stroke-width':0.6}));
+    svg.appendChild(text(x, y-r-8, `${NAMES[m]} (${fmtM(DATA[m].n_parameters)})`, {cls:'bar-label'}));
+  });
+})();
+
+// ---------- Fold stability line chart ----------
+(function() {
+  const svg = document.getElementById('chart-folds');
+  const vb = svg.viewBox.baseVal;
+  const W = vb.width, H = vb.height;
+  const marginL = 50, marginR = 30, marginT = 20, marginB = 40;
+  const plotW = W-marginL-marginR, plotH = H-marginT-marginB;
+  const folds = [0,1,2,3,4];
+
+  const allVals = MODELS.flatMap(m => DATA[m].fold_f1_macro);
+  const yMin = Math.min(...allVals)-0.01, yMax = Math.max(...allVals)+0.01;
+
+  svg.appendChild(el('line', {x1:marginL, y1:marginT, x2:marginL, y2:marginT+plotH, stroke:'#ccc'}));
+  svg.appendChild(el('line', {x1:marginL, y1:marginT+plotH, x2:marginL+plotW, y2:marginT+plotH, stroke:'#ccc'}));
+  svg.appendChild(text(marginL+plotW/2, H-6, 'Fold', {cls:'axis-label'}));
+
+  for (let g=0; g<=4; g++) {
+    const val = yMin + (yMax-yMin)*g/4;
+    const y = marginT + plotH - ((val-yMin)/(yMax-yMin))*plotH;
+    svg.appendChild(el('line', {x1:marginL, y1:y, x2:marginL+plotW, y2:y, stroke:'#eee'}));
+    svg.appendChild(text(marginL-8, y, val.toFixed(3), {anchor:'end', baseline:'central'}));
+  }
+  folds.forEach(f => {
+    const x = marginL + (f/(folds.length-1))*plotW;
+    svg.appendChild(text(x, marginT+plotH+18, 'fold '+f, {cls:'axis-label'}));
+  });
+
+  MODELS.forEach(m => {
+    const vals = DATA[m].fold_f1_macro;
+    const pts = folds.map((f,i) => {
+      const x = marginL + (f/(folds.length-1))*plotW;
+      const y = marginT + plotH - ((vals[i]-yMin)/(yMax-yMin))*plotH;
+      return [x,y];
+    });
+    const path = 'M' + pts.map(p=>p.join(',')).join(' L');
+    svg.appendChild(el('path', {d: path, fill:'none', stroke:COLORS[m], 'stroke-width':2}));
+    pts.forEach(p => svg.appendChild(el('circle', {cx:p[0], cy:p[1], r:3.5, fill:COLORS[m]})));
+  });
+})();
+
+// ---------- Significance table ----------
+(function() {
+  const rows = Object.keys(SIG).map(k => {
+    const s = SIG[k];
+    const [a,b] = k.split('_vs_');
+    return `<tr>
+      <td>${NAMES[a]} vs ${NAMES[b]}</td>
+      <td class="num">${fmt(s.mean_diff,4)}</td>
+      <td class="num">${fmt(s.wilcoxon.p_value,4)}</td>
+      <td class="num ${s.wilcoxon['significant_at_0.05'] ? 'sig-yes':'sig-no'}">${s.wilcoxon['significant_at_0.05'] ? 'Yes':'No'}</td>
+      <td class="num">${fmt(s.paired_t_test.p_value,4)}</td>
+      <td class="num ${s.paired_t_test['significant_at_0.05'] ? 'sig-yes':'sig-no'}">${s.paired_t_test['significant_at_0.05'] ? 'Yes':'No'}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('sig-table').innerHTML = `
+    <tr><th>Comparison</th><th class="num">Mean diff</th><th class="num">Wilcoxon p</th><th class="num">Sig?</th><th class="num">Paired t p</th><th class="num">Sig?</th></tr>
+    ${rows}`;
+})();
+
+// ---------- Raw metrics table ----------
+(function() {
+  const rows = MODELS.map(m => {
+    const d = DATA[m];
+    return `<tr>
+      <td><span class="swatch" style="background:${COLORS[m]};display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;"></span>${NAMES[m]}</td>
+      <td class="num">${fmt(d.f1_macro_mean)}</td>
+      <td class="num">${fmt(d.f1_macro_std)}</td>
+      <td class="num">${fmt(d.f1_weighted_mean)}</td>
+      <td class="num">${fmt(d.f1_weighted_std)}</td>
+      <td class="num">${fmtM(d.n_parameters)}</td>
+      <td class="num">${fmtMin(d.train_time_total_seconds)}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('raw-table').innerHTML = `
+    <tr><th>Model</th><th class="num">F1-macro</th><th class="num">± std</th><th class="num">F1-weighted</th><th class="num">± std</th><th class="num">Params</th><th class="num">Train (min, 5 folds)</th></tr>
+    ${rows}`;
+})();
+</script>
+</body>
+</html>
