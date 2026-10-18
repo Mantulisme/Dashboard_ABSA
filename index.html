@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ABSA Model Comparison — Evaluation Dashboard</title>
+<title>Dashboard Evaluasi Analisis ABSA pada Ulasan Video Game di Steam</title>
 <style>
   :root {
     --bg: #f6f6f4;
@@ -126,25 +126,25 @@
 
 <header>
   <div class="wrap">
-    <h1>ABSA Model Comparison — Evaluation Dashboard</h1>
-    <p>BERT vs RoBERTa vs DistilBERT · 5-fold grouped/stratified cross-validation · aspect-category sentiment analysis on Steam game reviews</p>
+    <h1>Dashboard Evaluasi Analisis ABSA pada Ulasan Video Game di Steam</h1>
+    <p>BERT vs RoBERTa vs DistilBERT · 5-fold stratified cross-validation · Sentimen Analisis Berbasis Aspek</p>
   </div>
 </header>
 
 <div class="wrap">
 
   <section id="takeaway-section">
-    <h2>Summary</h2>
+    <h2>Kesimpulan</h2>
     <div class="takeaway" id="takeaway"></div>
   </section>
 
   <section>
-    <h2>Model Overview</h2>
+    <h2>Overview Model</h2>
     <div class="cards" id="cards"></div>
   </section>
 
   <section>
-    <h2>F1-macro &amp; F1-weighted (mean ± std across folds)</h2>
+    <h2>F1-macro &amp; F1-weighted (mean ± std kelima fold)</h2>
     <div class="chart-panel">
       <div class="legend" id="legend-main"></div>
       <svg id="chart-main" viewBox="0 0 900 380" style="width:100%;height:auto;"></svg>
@@ -154,18 +154,18 @@
   <section>
     <div class="grid-2">
       <div class="chart-panel">
-        <h2 style="margin-top:0">Efficiency: F1-macro vs Training Time</h2>
+        <h2 style="margin-top:0">Efisiensi: F1-macro vs Waktu Pelatihan</h2>
         <svg id="chart-efficiency" viewBox="0 0 520 380" style="width:100%;height:auto;"></svg>
       </div>
       <div class="chart-panel">
-        <h2 style="margin-top:0">Fold-by-fold Stability (F1-macro)</h2>
+        <h2 style="margin-top:0">Stabilitas Setiap Fold (F1-macro)</h2>
         <svg id="chart-folds" viewBox="0 0 520 380" style="width:100%;height:auto;"></svg>
       </div>
     </div>
   </section>
 
   <section>
-    <h2>Per-class F1 (mean across folds)</h2>
+    <h2>Nilai F1-macro per kelas (mean kelima fold)</h2>
     <div class="chart-panel">
       <div class="legend" id="legend-class"></div>
       <svg id="chart-class" viewBox="0 0 900 380" style="width:100%;height:auto;"></svg>
@@ -173,27 +173,10 @@
   </section>
 
   <section>
-    <h2>Per-aspect F1-macro (mean across folds)</h2>
+    <h2>Nilai F1-macro per aspek (mean kelima fold)</h2>
     <div class="chart-panel">
       <div class="legend" id="legend-aspect"></div>
       <svg id="chart-aspect" viewBox="0 0 900 460" style="width:100%;height:auto;"></svg>
-    </div>
-  </section>
-
-  <section>
-    <h2>Statistical Significance (paired, fold-level F1-macro)</h2>
-    <div class="chart-panel">
-      <table id="sig-table"></table>
-      <div class="note">
-        With N_FOLDS=5, Wilcoxon signed-rank has a hard floor at p = 2/2⁵ = 0.0625 — it cannot reach significance at p&lt;0.05 regardless of true effect size. The paired t-test doesn't share this floor and is the more informative test here, though it assumes roughly normal fold-level differences. Report both; don't lean on Wilcoxon's non-significance alone as evidence models are equivalent.
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <h2>Raw metrics</h2>
-    <div class="chart-panel">
-      <table id="raw-table"></table>
     </div>
   </section>
 
@@ -229,11 +212,12 @@ function fmtM(n) { return (n/1e6).toFixed(0) + 'M'; }
   const br_sig = SIG['bert_vs_roberta'];
   const speedup = (DATA.bert.train_time_total_seconds / DATA.distilbert.train_time_total_seconds).toFixed(1);
   document.getElementById('takeaway').innerHTML =
-    `<b>${NAMES[best]}</b> has the highest mean F1-macro (<b>${fmt(DATA[best].f1_macro_mean)}</b>), ` +
-    `narrowly ahead of BERT (paired t-test p=${fmt(br_sig.paired_t_test.p_value,3)}, not significant). ` +
-    `<b>DistilBERT</b> trains <b>${speedup}x faster</b> (${fmtMin(DATA.distilbert.train_time_total_seconds)} vs ` +
-    `${fmtMin(DATA.bert.train_time_total_seconds)} min total across 5 folds) but scores significantly lower on F1-macro ` +
-    `than both BERT (p=${fmt(bd_sig.paired_t_test.p_value,4)}) and RoBERTa (p=${fmt(rd_sig.paired_t_test.p_value,4)}).`;
+    `<b>${NAMES[best]}</b> memiliki rata-rata F1-macro tertinggi (<b>${fmt(DATA[best].f1_macro_mean)}</b>), ` +
+    `sedikit lebih tinggi dibandingkan BERT. ` +
+    `<b>DistilBERT</b> dapat dilatih <b>${speedup}x lebih cepat dibandingkan BERT</b> (${fmtMin(DATA.distilbert.train_time_total_seconds)} vs ` +
+    `${fmtMin(DATA.bert.train_time_total_seconds)} menit total pada kelima fold) tetapi memiliki nilai F1-macro yang lebih rendah ` +
+    `dibandingkan BERT <b>(${fmt(DATA.bert.f1_macro_mean)})</b> ` +
+    `dan RoBERTa <b>(${fmt(DATA.roberta.f1_macro_mean)})</b>.`;
 })();
 
 // ---------- Cards ----------
@@ -253,8 +237,8 @@ function fmtM(n) { return (n/1e6).toFixed(0) + 'M'; }
         <div class="metric-row"><span class="label">F1-macro</span><span class="value">${fmt(d.f1_macro_mean)} ± ${fmt(d.f1_macro_std)}</span></div>
         <div class="metric-row"><span class="label">F1-weighted</span><span class="value">${fmt(d.f1_weighted_mean)} ± ${fmt(d.f1_weighted_std)}</span></div>
         <div class="metric-row"><span class="label">Parameters</span><span class="value">${fmtM(d.n_parameters)}</span></div>
-        <div class="metric-row"><span class="label">Train time (total, 5 folds)</span><span class="value">${fmtMin(d.train_time_total_seconds)} min</span></div>
-        <div class="metric-row"><span class="label">Train time (per fold)</span><span class="value">${fmtMin(d.train_time_mean_seconds)} min</span></div>
+        <div class="metric-row"><span class="label">Waktu pelatihan (total, 5 folds)</span><span class="value">${fmtMin(d.train_time_total_seconds)} min</span></div>
+        <div class="metric-row"><span class="label">Waktu pelatihan (per fold)</span><span class="value">${fmtMin(d.train_time_mean_seconds)} min</span></div>
       </div>`;
   });
 })();
@@ -368,7 +352,7 @@ legendFor('legend-aspect', MODELS.map(m => ({label: NAMES[m], color: COLORS[m]})
 
   svg.appendChild(el('line', {x1:marginL, y1:marginT, x2:marginL, y2:marginT+plotH, stroke:'#ccc'}));
   svg.appendChild(el('line', {x1:marginL, y1:marginT+plotH, x2:marginL+plotW, y2:marginT+plotH, stroke:'#ccc'}));
-  svg.appendChild(text(marginL+plotW/2, H-8, 'Total training time, 5 folds (min)', {cls:'axis-label'}));
+  svg.appendChild(text(marginL+plotW/2, H-8, 'Total waktu pelatihan pada 5 folds (min)', {cls:'axis-label'}));
   const yl = text(0,0,'F1-macro (mean)', {cls:'axis-label'});
   yl.setAttribute('transform', `translate(14, ${marginT+plotH/2}) rotate(-90)`);
   svg.appendChild(yl);
@@ -435,43 +419,6 @@ legendFor('legend-aspect', MODELS.map(m => ({label: NAMES[m], color: COLORS[m]})
   });
 })();
 
-// ---------- Significance table ----------
-(function() {
-  const rows = Object.keys(SIG).map(k => {
-    const s = SIG[k];
-    const [a,b] = k.split('_vs_');
-    return `<tr>
-      <td>${NAMES[a]} vs ${NAMES[b]}</td>
-      <td class="num">${fmt(s.mean_diff,4)}</td>
-      <td class="num">${fmt(s.wilcoxon.p_value,4)}</td>
-      <td class="num ${s.wilcoxon['significant_at_0.05'] ? 'sig-yes':'sig-no'}">${s.wilcoxon['significant_at_0.05'] ? 'Yes':'No'}</td>
-      <td class="num">${fmt(s.paired_t_test.p_value,4)}</td>
-      <td class="num ${s.paired_t_test['significant_at_0.05'] ? 'sig-yes':'sig-no'}">${s.paired_t_test['significant_at_0.05'] ? 'Yes':'No'}</td>
-    </tr>`;
-  }).join('');
-  document.getElementById('sig-table').innerHTML = `
-    <tr><th>Comparison</th><th class="num">Mean diff</th><th class="num">Wilcoxon p</th><th class="num">Sig?</th><th class="num">Paired t p</th><th class="num">Sig?</th></tr>
-    ${rows}`;
-})();
-
-// ---------- Raw metrics table ----------
-(function() {
-  const rows = MODELS.map(m => {
-    const d = DATA[m];
-    return `<tr>
-      <td><span class="swatch" style="background:${COLORS[m]};display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;"></span>${NAMES[m]}</td>
-      <td class="num">${fmt(d.f1_macro_mean)}</td>
-      <td class="num">${fmt(d.f1_macro_std)}</td>
-      <td class="num">${fmt(d.f1_weighted_mean)}</td>
-      <td class="num">${fmt(d.f1_weighted_std)}</td>
-      <td class="num">${fmtM(d.n_parameters)}</td>
-      <td class="num">${fmtMin(d.train_time_total_seconds)}</td>
-    </tr>`;
-  }).join('');
-  document.getElementById('raw-table').innerHTML = `
-    <tr><th>Model</th><th class="num">F1-macro</th><th class="num">± std</th><th class="num">F1-weighted</th><th class="num">± std</th><th class="num">Params</th><th class="num">Train (min, 5 folds)</th></tr>
-    ${rows}`;
-})();
 </script>
 </body>
 </html>
